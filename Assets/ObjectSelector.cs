@@ -5,8 +5,6 @@ public class ObjectSelector
 {
   private readonly Material _idle;
   private readonly Material _hovered;
-  private ISelectable _selectedObject;
- 
   private LayerMask _mask;
 
   public ObjectSelector(Material idle, Material hovered)
@@ -15,21 +13,16 @@ public class ObjectSelector
     _hovered = hovered;
   }
 
-  public void SelectObject(RaycastHit hit)
+  public void SelectObject(ISelectable selectable)
   {
-      if (hit.transform.TryGetComponent<ISelectable>(out ISelectable selected))
-      {
-        _selectedObject = selected;
-        _selectedObject.Select(_hovered);
-      }
+    selectable.Select(_hovered);
   }
 
-  public void DeselectObject()
+  public void DeselectObject(ISelectable selectable)
   {
-    if (_selectedObject is not null)
+    if (selectable is not null)
     {
-      _selectedObject.Select(_idle);
-      _selectedObject = null;
+      selectable.Select(_idle);
     }
   }
 }

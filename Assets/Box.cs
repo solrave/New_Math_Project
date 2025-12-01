@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class Box : MonoBehaviour, IDraggable, ISelectable
 {
+  public bool Selected { get; set; }
   private Rigidbody _rb;
   private MeshRenderer _mr;
   private bool _isHit;
@@ -30,6 +31,7 @@ public class Box : MonoBehaviour, IDraggable, ISelectable
     _rb.isKinematic = false;
     _rb.AddForce(0,-1,0);
   }
+
 
   public void Select(Material material)
   {

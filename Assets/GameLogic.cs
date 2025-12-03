@@ -13,6 +13,7 @@ public class GameLogic : MonoBehaviour
   private ObjectMover _mover;
   private RaycastHit _groundHit;
   private RaycastHit _objectHit;
+  private RaycastHit[] _sphereHit;
   private bool _isGroundHit;
   private bool _isObjectHit;
 
@@ -29,14 +30,40 @@ public class GameLogic : MonoBehaviour
     SelectObject();
     ProcessHit();
     InstantiateObject();
+    MakeExplosion();
   }
 
+  private void MakeExplosion()
+  {
+    if (_input.MouseRightDown && _isGroundHit)
+    {
+      Debug.Log("RIGHT MOUSE");
+      _sphereHit = Physics.SphereCastAll(CustomRay, 2f, Mathf.Infinity, _objectMask);
+      if (_sphereHit.Length > 1)
+      {
+        Debug.Log("SPHERE");
+        foreach (RaycastHit hit in _sphereHit)
+        {
+          if (hit.transform.TryGetComponent<Rigidbody>(out var rb))
+          {
+            rb.AddForce(rb.position - _objectHit.point * 5f,ForceMode.Impulse);
+          }
+        } 
+      }
+    }
+  }
   private void InstantiateObject()
   {
-    if (_input.SpaceClick && _isGroundHit)
+    if (_input.SpaceKeyDown && _isGroundHit)
     {
       var position = new Vector3(_groundHit.point.x, _groundHit.point.y + 0.5f, _groundHit.point.z);
       Instantiate(_box, position, Quaternion.identity);
+    }
+    
+    if (_input.VKeyDown && _isGroundHit)
+    {
+      var position = new Vector3(_groundHit.point.x, _groundHit.point.y + 0.5f, _groundHit.point.z);
+      Instantiate(_pyramid, position, Quaternion.identity);
     }
   }
   

@@ -13,6 +13,7 @@ public class GameLogic : MonoBehaviour
   private ObjectMover _mover;
   private RaycastHit _groundHit;
   private RaycastHit _objectHit;
+  private RaycastHit _sphereRay;
   private RaycastHit[] _sphereHit;
   private bool _isGroundHit;
   private bool _isObjectHit;
@@ -38,7 +39,8 @@ public class GameLogic : MonoBehaviour
     if (_input.MouseRightDown && _isGroundHit)
     {
       Debug.Log("RIGHT MOUSE");
-      _sphereHit = Physics.SphereCastAll(CustomRay, 2f, Mathf.Infinity, _objectMask);
+      var impactRay = new Ray(_groundHit.point, Vector3.up);
+      _sphereHit = Physics.SphereCastAll(impactRay, 6f,Mathf.Infinity, _objectMask);
       if (_sphereHit.Length > 1)
       {
         Debug.Log("SPHERE");
@@ -46,6 +48,8 @@ public class GameLogic : MonoBehaviour
         {
           if (hit.transform.TryGetComponent<Rigidbody>(out var rb))
           {
+            Vector3 surfacePoint = rb.GetComponent<Collider>().ClosestPoint(impactRay.origin);
+            //rb.AddForce(surfacePoint - impactRay.origin * 5f,ForceMode.Impulse);
             rb.AddForce(rb.position - _objectHit.point * 5f,ForceMode.Impulse);
           }
         } 

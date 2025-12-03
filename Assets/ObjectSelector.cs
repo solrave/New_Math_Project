@@ -3,26 +3,22 @@ using UnityEngine;
 
 public class ObjectSelector
 {
-  private readonly Material _idle;
-  private readonly Material _hovered;
   private LayerMask _mask;
+  private ISelectable _currentSelectable;
 
-  public ObjectSelector(Material idle, Material hovered)
+  public void SelectObject(Transform transform)
   {
-    _idle = idle;
-    _hovered = hovered;
-  }
-
-  public void SelectObject(ISelectable selectable)
-  {
-    selectable.Select(_hovered);
-  }
-
-  public void DeselectObject(ISelectable selectable)
-  {
-    if (selectable is not null)
+    if (transform.TryGetComponent<ISelectable>(out var selectable))
     {
-      selectable.Select(_idle);
+      DeselectObject();
+      _currentSelectable = selectable;
+      _currentSelectable.Select();
     }
+  }
+
+  public void DeselectObject()
+  {
+    _currentSelectable?.Deselect();
+    _currentSelectable = null;
   }
 }

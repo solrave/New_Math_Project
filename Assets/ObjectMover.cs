@@ -3,25 +3,27 @@ using Input = UnityEngine.Windows.Input;
 
 public class ObjectMover
 {
-  private IDraggable draggable;
-  public bool Dragged => draggable != null;
+  private IDragable _dragable;
+  public bool DragInProgress => _dragable != null;
   public void MoveObject(Vector3 point)
   {
-    draggable?.Move(point);
+    _dragable?.Move(point);
   }
 
   public void PickUpObject(Transform transform)
   {
-    if (transform.TryGetComponent<IDraggable>(out draggable))
+    if (transform.TryGetComponent<IDragable>(out var dragable))
     {
-      draggable.PickUp();
+      _dragable?.Release();
+      _dragable = dragable;
+      _dragable.PickUp();
     }
   }
 
   public void ReleaseObject()
   {
-    draggable?.Release();
-    draggable = null;
+    _dragable?.Release();
+    _dragable = null;
   }
   
 }

@@ -1,9 +1,10 @@
 using System;
 using UnityEngine;
 
-public class Box : MonoBehaviour, IDraggable, ISelectable
+public class Box : MonoBehaviour, IDragable, ISelectable
 {
-  public bool Selected { get; set; }
+  [SerializeField] private Material _selected;
+  [SerializeField] private Material _idle;
   private Rigidbody _rb;
   private MeshRenderer _mr;
   private bool _isHit;
@@ -22,8 +23,7 @@ public class Box : MonoBehaviour, IDraggable, ISelectable
 
   public void Move(Vector3 point)
   {
-    _rb.transform.position = (new Vector3(point.x,transform.position.y,point.z));
-    //_rb.transform.position = point;
+    _rb.MovePosition(new Vector3(point.x,transform.position.y,point.z));
   }
 
   public void Release()
@@ -33,9 +33,14 @@ public class Box : MonoBehaviour, IDraggable, ISelectable
   }
 
 
-  public void Select(Material material)
+  public void Select()
   {
-    _mr.material = material;
+    Debug.Log("Selected!");
+    _mr.material = _selected;
   }
-  
+
+  public void Deselect()
+  {
+    _mr.material = _idle;
+  }
 }

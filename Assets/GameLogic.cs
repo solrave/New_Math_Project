@@ -1,4 +1,5 @@
 using System;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class GameLogic : MonoBehaviour
@@ -17,6 +18,7 @@ public class GameLogic : MonoBehaviour
   private RaycastHit[] _sphereHit;
   private bool _isGroundHit;
   private bool _isObjectHit;
+  private const float _impactForce = 5f;
 
   private void Awake()
   {
@@ -39,21 +41,28 @@ public class GameLogic : MonoBehaviour
     if (_input.MouseRightDown && _isGroundHit)
     {
       Debug.Log("RIGHT MOUSE");
-      var impactRay = new Ray(_groundHit.point, Vector3.up);
-      _sphereHit = Physics.SphereCastAll(impactRay, 6f,Mathf.Infinity, _objectMask);
-      if (_sphereHit.Length > 1)
+      var impactTargets = Physics.OverlapSphere(_groundHit.point, 5f, _objectMask);
+      if (impactTargets.Length != 0)
       {
-        Debug.Log("SPHERE");
-        foreach (RaycastHit hit in _sphereHit)
+        foreach (Collider impactTarget in impactTargets)
         {
-          if (hit.transform.TryGetComponent<Rigidbody>(out var rb))
-          {
-            Vector3 surfacePoint = rb.GetComponent<Collider>().ClosestPoint(impactRay.origin);
-            //rb.AddForce(surfacePoint - impactRay.origin * 5f,ForceMode.Impulse);
-            rb.AddForce(rb.position - _objectHit.point * 5f,ForceMode.Impulse);
-          }
-        } 
+          impactTarget.GetComponent<Rigidbody>().AddForce(impactTarget.transform.position - _groundHit.point * _impactForce, ForceMode.Impulse);
+        }
       }
+    // var impactRay = new Ray(_groundHit.point, Vector3.up);
+    // _sphereHit = Physics.SphereCastAll(impactRay, 6f,Mathf.Infinity, _objectMask);
+    // if (_sphereHit.Length > 1)
+    // {
+    //   Debug.Log("SPHERE");
+    //   foreach (RaycastHit hit in _sphereHit)
+    //   {
+    //     if (hit.transform.TryGetComponent<Rigidbody>(out var rb))
+    //     {
+    //       Vector3 surfacePoint = rb.GetComponent<Collider>().ClosestPoint(impactRay.origin);
+    //       rb.AddForce(surfacePoint - _groundHit.point * 5f,ForceMode.Impulse);
+    //     }
+    //   } 
+    // }
     }
   }
   private void InstantiateObject()
